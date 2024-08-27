@@ -2,9 +2,9 @@
     analysis to be executed over the Flask channel and deployed on
     localhost:5000.
 '''
-# Import Flask, render_template, request from the flask pramework package 
+# Import Flask, render_template, request from the flask pramework package
 from flask import Flask, render_template, request
-# Import the sentiment_analyzer function from the package created: 
+# Import the sentiment_analyzer function from the package created:
 from SentimentAnalysis.sentiment_analysis import sentiment_analyzer
 
 #Initiate the flask app : TODO
@@ -21,12 +21,17 @@ def sent_analyzer():
 
     if not text_to_analyze:
         return {'message': 'Missing text'}, 422
-    
-    response = sentiment_analyzer(text_to_analyze)
-    output_label = response.get('label').split('_')[1]
-    output_score = response.get('score')
 
-    return f"The given text has been identified as {output_label} with a score of {output_score}", 200
+
+    response = sentiment_analyzer(text_to_analyze)
+    label = response.get('label')
+    score = response.get('score')
+    if label:
+        output_label = label.split('_')[1]
+        output_score = score
+        return f"The given text has been identified as {output_label} with a score of {output_score}", 200
+
+    return 'Invalid input! Try again.'
 
 @app.route("/")
 def render_index_page():
@@ -36,6 +41,4 @@ def render_index_page():
     return render_template('index.html')
 
 if __name__ == "__main__":
-    ''' This functions executes the flask app and deploys it on localhost:5000
-    '''
     app.run(host = "0.0.0.0", port = 5000)
